@@ -1,0 +1,4 @@
+[wordpress]
+172.16.51.63       
+[lampserver:vars]
+ansible_python_interpreter=/usr/bin/python3
