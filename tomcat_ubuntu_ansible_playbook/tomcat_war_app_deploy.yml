@@ -1,0 +1,29 @@
+---
+- name: install tomcat server
+  hosts: lampserver 
+  become: true
+
+  tasks:
+
+  - name: download tomcat server packages
+    get_url:
+      url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.0.8/bin/apache-tomcat-10.0.8.tar.gz
+
+      dest: /usr/local
+
+  - name: extract tomcat packages
+    unarchive:
+      src: /usr/local/apache-tomcat-10.0.8.tar.gz
+      dest: /usr/local
+      remote_src: yes
+
+  - name: start tomcat services
+    shell: nohup /usr/local/apache-tomcat-10.0.8/bin/startup.sh
+
+  - name: deploy index.html
+    become: yes
+    become_user: root
+    copy:
+      src: /home/msis/AnsibleWorkUpdated/tomcat_ubuntu_ansible_playbook/MyMavenApp.war 
+      dest: /usr/local/apache-tomcat-10.0.8/webapps/. 
+
