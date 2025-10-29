@@ -4,18 +4,17 @@
   apt:
     update_cache: yes
 
-# Install necessary packages
+# Install Apache and PHP packages
 - name: Install Apache and PHP packages
   apt:
-    name: "{{ item }}"
+    name:
+      - apache2
+      - php
+      - php-mysql
+      - libapache2-mod-php
+      - wget
+      - tar
     state: present
-  loop:
-    - apache2
-    - php
-    - php-mysql
-    - libapache2-mod-php
-    - wget
-    - tar
 
 # Ensure Apache is enabled and started
 - name: Ensure Apache is enabled and started
@@ -24,18 +23,29 @@
     state: started
     enabled: yes
 
-# Download the tarball containing the application code
+# Ensure /var/www/html/mompopcafe directory exists
+- name: Ensure /var/www/html/mompopcafe directory exists
+  file:
+    path: /var/www/html/mompopcafe
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+# Download the application tarball
 - name: Download application code tarball
   get_url:
     url: "{{ app_tarball_url }}"
     dest: "{{ app_tarball_dest }}"
 
-# Extract the tarball to the target directory
-- name: Extract application code
+# Extract the tarball to /var/www/html/mompopcafe
+- name: Extract application code to /var/www/html/mompopcafe
   unarchive:
     src: "{{ app_tarball_dest }}"
-    dest: "{{ app_extract_dest }}"
+    dest: /var/www/html/mompopcafe
     remote_src: yes
+    extra_opts: [--strip-components=1]  # optional: removes top-level folder inside tarball
+  notify: Reload Apache
 
 # Ensure /etc/cafe directory exists
 - name: Ensure /etc/cafe directory exists
@@ -51,27 +61,18 @@
     dest: "{{ get_app_parameters_host_dest }}"
     mode: '0644'
 
-# Ensure /var/www/html/mompopcafe directory exists
-- name: Ensure /var/www/html/mompopcafe directory exists
-  file:
-    path: "{{ app_extract_dest }}"
-    state: directory
-    mode: '0755'
-
-# Copy the application code to the target directory
-- name: Copy application code to /var/www/html/mompopcafe/
-  copy:
-    src: "{{ item }}"
-    dest: "{{ app_extract_dest }}"
+# Copy getAppParameters.php template inside app directory
+- name: Copy getAppParameters.php template to /var/www/html/mompopcafe/
+  template:
+    src: "{{ get_app_parameters_src }}"
+    dest: "{{ get_app_parameters_dest }}"
     owner: www-data
     group: www-data
     mode: '0644'
-  with_fileglob: "/tmp/Cafe_Dynamic_Website/mompopcafe/*"
 
-# Update Apache configuration to point to the application directory
+# Update Apache configuration to point to mompopcafe
 - name: Update Apache configuration
   template:
     src: "{{ apache_config_template }}"
     dest: /etc/apache2/sites-available/000-default.conf
   notify: Reload Apache
-
