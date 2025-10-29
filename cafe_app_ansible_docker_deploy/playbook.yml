@@ -7,10 +7,17 @@
       name: python3-pip
       state: present
 
+  - name: Install Docker SDK for Python
+    ansible.builtin.pip:
+       name: docker
+       extra_args: "--break-system-packages"
+
+
   - name: Install Docker module for Python
     pip:
       name: docker
       state: present
+      extra_args: "--break-system-packages"
 
   - name: Include cafeweb role
     include_role:
@@ -19,4 +26,3 @@
   - name: Include mysql role
     include_role:
       name: mysql
-
