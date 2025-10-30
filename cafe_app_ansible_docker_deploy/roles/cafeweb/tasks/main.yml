@@ -21,19 +21,20 @@
 
 - name: Pull cafeweb image from Docker Hub
   docker_image:
-    name: "{{ cafeweb_image }}"
-    pull: true
+    name: "sreedocker123/mompopcafeapp:v1"
+    tag: "v1"
+    source: pull
+    #pull: true
 
 - name: Create and start cafeweb container
   docker_container:
     name: "{{ cafeweb_container_name }}"
     image: "{{ cafeweb_image }}"
     ports:
-      - "80:80"
+      - "5080:80"
     volumes:
       - /etc/cafeapp/getAppParameters.php.j2:/var/www/html/getAppParameters.php
     env:
       TZ: "{{ time_zone }}"
     networks:
       - name: cafeapp_network
-
