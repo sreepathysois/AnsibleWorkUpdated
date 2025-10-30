@@ -16,8 +16,9 @@
 
 - name: Pull mysql image from Docker Hub
   docker_image:
-    name: "{{ mysql_image }}"
-    pull: true
+    name: "mysql"
+    tag: "latest"
+    source: pull
 
 - name: Render create-db.sql from template
   template:
@@ -32,10 +33,9 @@
       MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
       MYSQL_DATABASE: "{{ mysql_database }}"
     ports:
-      - "3306:3306"
+      - "3309:3306"
     volumes:
       - /var/lib/mysql
       - /etc/cafeapp/create-db.sql.j2:/docker-entrypoint-initdb.d/create-db.sql
     networks:
       - name: cafeapp_network
-
