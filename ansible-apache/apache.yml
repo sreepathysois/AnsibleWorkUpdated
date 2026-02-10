@@ -2,6 +2,9 @@
 - hosts: apache
   #sudo: yes
   become: true
+  become_method: sudo
+  become_user: root
+  #become: true
   vars:
     created_username: msis-cdc
   tasks:
