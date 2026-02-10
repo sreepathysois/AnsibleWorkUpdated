@@ -3,7 +3,7 @@
   #sudo: yes
   become: true
   vars:
-    created_username: msis
+    created_username: msis-cdc
   tasks:
     - name: install apache2
       apt: name=apache2 update_cache=yes state=latest
