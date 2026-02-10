@@ -9,8 +9,8 @@
         pkg:
           - apache2
           - mysql-server
-          - php7.2 
-          - php7.2-mysql
+          - php
+          - php-mysql
         state: present
         update_cache: yes
 
